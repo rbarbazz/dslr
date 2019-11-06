@@ -14,7 +14,6 @@ if __name__ == '__main__':
 
     indexes = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
     describe = pd.DataFrame(columns=df.columns, index=indexes, dtype=float)
-    df.apply(lambda x: round(x, 2))
     describe.loc['Count', :] = 0
 
     totals = {subject: 0 for subject in df.columns}
@@ -39,14 +38,14 @@ if __name__ == '__main__':
 
     # Iterate over df(col -> row) to find Std
     for col_name in df:
-        current_total = 0
+        tmp_total = 0
         for cell in df[col_name]:
             if not np.isnan(cell):
-                print(cell)
-                current_total += math.pow((cell -
-                                           describe.loc['Mean', col_name]), 2)
-        describe.at['Std', col_name] = math.sqrt(
-            (current_total / describe.loc['Count', col_name]))
+                tmp_calc = cell - describe.loc['Mean', col_name]
+                tmp_total += math.pow(tmp_calc, 2)
+        # Bessel's correction
+        variance = (1 / (describe.loc['Count', col_name] - 1)) * tmp_total
+        describe.at['Std', col_name] = math.sqrt(variance)
 
     print(describe)
     print(df.describe())
