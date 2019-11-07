@@ -18,14 +18,22 @@ def percentile(sorted_serie, percentile):
         position = (describe.loc['Count', col_name] * 3 + 1) / 4
 
     # Find the position if it can or interpolation:
+    trunced = math.trunc(position)
+    current_column = sorted_serie[col_name]
     if position.is_integer():
-        return (sorted_serie[col_name][position - 1])
+        return (current_column[position - 1])
     elif position % 1 == 0.25:
-        return ((sorted_serie[col_name][math.trunc(position) - 1] * 3 + sorted_serie[col_name][math.trunc(position)]) / 4)
+        return (
+            (current_column[trunced - 1] * 3 + current_column[trunced]) / 4
+        )
     elif position % 1 == 0.5:
-        return ((sorted_serie[col_name][math.trunc(position) - 1] + sorted_serie[col_name][math.trunc(position)]) / 2)
+        return (
+            (current_column[trunced - 1] + current_column[trunced]) / 2
+        )
     elif position % 1 == 0.75:
-        return ((sorted_serie[col_name][math.trunc(position) - 1] + sorted_serie[col_name][math.trunc(position)] * 3) / 4)
+        return (
+            (current_column[trunced - 1] + current_column[trunced] * 3) / 4
+        )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Describe a set of data')
