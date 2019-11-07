@@ -8,13 +8,13 @@ def print_full(x):
     print(x)
     pd.reset_option('display.max_rows')
 
-def percentile(sorted_serie, position):
+def percentile(sorted_serie, percentile):
     #Determine the position
-    if position == 25:
+    if percentile == 25:
         position = (describe.loc['Count', col_name] + 3) / 4
-    elif position == 50:
+    elif percentile == 50:
         position = (describe.loc['Count', col_name] + 1) / 2
-    elif position == 75:
+    elif percentile == 75:
         position = (describe.loc['Count', col_name] * 3 + 1) / 4
 
     # Find the position if it can or interpolation:
