@@ -3,6 +3,30 @@ import numpy as np
 import argparse
 import math
 
+def print_full(x):
+    pd.set_option('display.max_rows', len(x))
+    print(x)
+    pd.reset_option('display.max_rows')
+
+def percentile(sorted_serie, position):
+    #Determine the position
+    if position == 25:
+        position = (describe.loc['Count', col_name] + 3) / 4
+    elif position == 50:
+        position = (describe.loc['Count', col_name] + 1) / 2
+    elif position == 75:
+        position = (describe.loc['Count', col_name] * 3 + 1) / 4
+
+    # Find the position if it can or interpolation:
+    if position.is_integer():
+        return (sorted_serie[col_name][position - 1])
+    elif position % 1 == 0.25:
+        return ((sorted_serie[col_name][math.trunc(position) - 1] * 3 + sorted_serie[col_name][math.trunc(position)]) / 4)
+    elif position % 1 == 0.5:
+        return ((sorted_serie[col_name][math.trunc(position) - 1] + sorted_serie[col_name][math.trunc(position)]) / 2)
+    elif position % 1 == 0.75:
+        return ((sorted_serie[col_name][math.trunc(position) - 1] + sorted_serie[col_name][math.trunc(position)] * 3) / 4)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Describe a set of data')
     parser.add_argument('filepath', type=str,
@@ -47,5 +71,12 @@ if __name__ == '__main__':
         variance = (1 / (describe.loc['Count', col_name] - 1)) * tmp_total
         describe.at['Std', col_name] = math.sqrt(variance)
 
+        #Find Quartile
+        sorted_serie = df[col_name].sort_values().reset_index()
+        describe.at['25%', col_name] = percentile(sorted_serie, 25)
+        describe.at['50%', col_name] = percentile(sorted_serie, 50)
+        describe.at['75%', col_name] = percentile(sorted_serie, 75)
+
     print(describe)
+    print ("\n")
     print(df.describe())
